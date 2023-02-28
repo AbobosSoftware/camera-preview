@@ -535,14 +535,20 @@ public class CameraActivity extends Fragment {
                 if (!disableExifHeaderStripping) {
                     Matrix matrix = new Matrix();
                     if (cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                        matrix.preScale(1.0f, -1.0f);
+
+                        int orientation = mPreview.getDisplayOrientation();
+
+                        /**Flip upside down on the y axis iff 90 or 270 */
+                        if(90 == orientation || 270 == orientation){
+                            matrix.preScale(1.0f, -1.0f);
+                        }
                     }
 
                     ExifInterface exifInterface = new ExifInterface(new ByteArrayInputStream(data));
                     int rotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
                     int rotationInDegrees = exifToDegrees(rotation);
 
-                    if (rotation != 0f) {
+                    if (rotationInDegrees != 0) {
                         matrix.preRotate(rotationInDegrees);
                     }
 
